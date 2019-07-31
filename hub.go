@@ -17,6 +17,7 @@ func NewHub() *Hub {
 		subscribers: make([]Subscriber, 0),
 		channel:     make(chan Any),
 	}
+	go hub.fanOut()
 	return &hub
 }
 
