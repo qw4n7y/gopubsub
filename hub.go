@@ -2,20 +2,18 @@ package gopubsub
 
 import "sync"
 
-type Any interface{}
-
-type Subscriber = func(Any)
+type Subscriber = func(message interface{})
 
 type Hub struct {
 	mutex       sync.Mutex
 	subscribers []Subscriber
-	channel     chan Any
+	channel     chan interface{}
 }
 
 func NewHub() *Hub {
 	hub := Hub{
 		subscribers: make([]Subscriber, 0),
-		channel:     make(chan Any, 100),
+		channel:     make(chan interface{}, 100),
 	}
 	go hub.fanOut()
 	return &hub
@@ -29,7 +27,7 @@ func (h *Hub) Subscribe(subscriber Subscriber) {
 	h.mutex.Unlock()
 }
 
-func (h *Hub) Publish(message Any) {
+func (h *Hub) Publish(message interface{}) {
 	// non blocking write
 	select {
 	case h.channel <- message:
