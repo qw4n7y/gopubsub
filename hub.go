@@ -15,7 +15,7 @@ type Hub struct {
 func NewHub() *Hub {
 	hub := Hub{
 		subscribers: make([]Subscriber, 0),
-		channel:     make(chan Any),
+		channel:     make(chan Any, 100),
 	}
 	go hub.fanOut()
 	return &hub
@@ -40,8 +40,10 @@ func (h *Hub) Publish(message Any) {
 func (h *Hub) fanOut() {
 	for {
 		message := <-h.channel
-		for _, subscriber := range h.subscribers {
-			subscriber(message)
-		}
+		go func() {
+			for _, subscriber := range h.subscribers {
+				subscriber(message)
+			}
+		}()
 	}
 }
