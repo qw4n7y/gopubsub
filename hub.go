@@ -2,7 +2,7 @@ package gopubsub
 
 import "sync"
 
-type Any struct{}
+type Any interface{}
 
 type Subscriber = func(Any)
 
